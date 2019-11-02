@@ -11,8 +11,8 @@ AZULC     = (  0,   0, 255)
 VERDE     = (  0, 255,   0)
 
 # BASE Y ALTO DE LAS CUADRICULAS
-BASE = 35
-ALTO = 35
+BASE = 30
+ALTO = 30
 var_1 = 0
 var_2 = 0
 # MARGEN entre las cuadriculas
@@ -205,6 +205,8 @@ while True:
                 row = pos[1] // var_1
                 # Establece esa ubicación a cero
                 TableroEnemigo[row][column] = 1
+                if TableroEnemigo[row][column] == 1:
+                    print("le pegue al barco")
                 print("Click ", pos, "Coordenadas de la retícula: ", row, column)
             except:
                 print("entre")
@@ -215,11 +217,11 @@ while True:
         for columna in range(10):
             color = AZULC
             if TableroEnemigo[fila][columna] == 1:
-                color = VERDE
+                color = ROJO
             pygame.draw.rect(ventana,
                                 color,
-                                [(MARGEN+BASE) * columna + MARGEN+50,
-                                (MARGEN+ALTO) * fila + MARGEN+50,
+                                [(MARGEN+BASE) * columna + MARGEN,
+                                (MARGEN+ALTO) * fila + MARGEN,
                                 BASE,
                                 ALTO])
      #DIBUJAMOS LA CUADRICULA DEL JUGADOR:
@@ -230,13 +232,13 @@ while True:
                 color = VERDE
             pygame.draw.rect(ventana,
                                 color,
-                                [(MARGEN+BASE) * columna + MARGEN+810,
-                                (MARGEN+ALTO) * fila + MARGEN+50,
+                                [(MARGEN+BASE) * columna + MARGEN,
+                                (MARGEN+ALTO) * fila + MARGEN+370,
                                 BASE,
                                 ALTO])
     
 
     T_tiempo = arial.render(f"Tiempo: {tiempo}",0, NEGRO) 
-    ventana.blit(T_tiempo, (0, 0))      
+    ventana.blit(T_tiempo, (1200/2, 650/2))      
     pygame.display.flip()
     FPS.tick(60) #Se ajusta la velocidad de fotogramas per segundos a 60
