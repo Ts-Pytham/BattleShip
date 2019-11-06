@@ -1,5 +1,8 @@
 import pygame, sys, random, os
+import tkinter as tk
+from tkinter import font
 import pygame as pg
+from tkinter import messagebox
 
 #COLORES
 BLANCO    = (255, 255, 255)
@@ -26,6 +29,8 @@ comenzar = 0
 # VARIABLE PARA ELEGIR EL MODO
 menu = 0
 
+#NOMBRE DEL USUARIO
+usuario = ""
 #CREAMOS EL TABLERO DEL JUGADOR
 TableroJugador = []
 
@@ -166,18 +171,28 @@ else:
         for column in range(1):
             TableroEnemigo[RandomX+row][RandomY] = 1
 
+#--------------------------PYGAME---------------------------------------
 #Para encontrar cualquier imagen de manera efizcas.
 current_path = os.path.dirname(__file__) 
 image_path = os.path.join(current_path, 'img')
+sound_path = os.path.join(current_path, 'sound')
+sound_path2 = os.path.join(sound_path, 'effects')
 
-pg.init()
+pg.init() #INICIALIZO PYGAME
 
 #Cargar Imágenes
 icon = pygame.image.load(os.path.join(image_path, 'icon.png'))
 
 main = pygame.image.load(os.path.join(image_path, 'main.png'))
 
+fondo = pygame.image.load(os.path.join(image_path, 'fondo.png'))
+
 circle = pygame.image.load(os.path.join(image_path, 'circle.png'))
+
+
+#CARGAS SONIDOS
+
+smenu = pygame.mixer.Sound(os.path.join(sound_path2, 'effect1.wav'))
 
 #DIMENSION DE LA VENTANA
 DIMENSION_VENTANA = [1280, 700]
@@ -212,7 +227,7 @@ def atacar():
         if TableroEnemigo[row][column] == 1:
             TableroEnemigo[row][column] = 2 #Si lo hay setea la variable a 2
             turnos = 1
-        elif TableroEnemigo[row][column] == 2: #Si lo destruye
+        elif TableroEnemigo[row][column] == 2 or TableroEnemigo[row][column] == 3: #Si lo destruye
             print("Ya lo destruiste!") # No pasa nada :v
             turnos = 0
         else:
@@ -308,10 +323,63 @@ def coordenadas_numeros():
         ventana.blit(F_letras, (8+increx, 330))
         ventana.blit(F_letras, (970+increx, 330))
         increx+=32
-#--------------------------------------FIN DE FUNCIONES------------------------------
+
+
+def contador():
+    tiempo = int(pygame.time.get_ticks()/1000)
+    T_tiempo = arial.render(f"Tiempo: {tiempo}",0, NEGRO) 
+    ventana.blit(T_tiempo, (1200/2, 650/2)) 
+
+
+def esperar_turno():
+    pg.time.set_timer(pg.USEREVENT, 3000)
+    ataque_bot()
+
+
+def transicion(width, height): 
+    fade = pygame.Surface((width, height))
+    fade.fill((0,0,0))
+    for alpha in range(0, 150):
+        fade.set_alpha(alpha)
+        ventana.blit(fade, (0,0))
+        pygame.display.update()
+        pygame.time.delay(1)
+
+
+#--------------------------------------FUNCIONES TKINTER------------------------------
+def comprobar_nombre():
+    if len(tusuario.get()) < 4:
+        messagebox.showwarning("¡ERROR!","¡El usuario debe tener más de 4 caracteres!")
+    elif len(tusuario.get()) > 12:
+        messagebox.showwarning("¡ERROR!","¡El usuario no puede contener más de 12 caracteres!")
+    else:
+        raiz.destroy()
+
+def mostrar_nombre():
+    usuario = tusuario.get()
+    F_usuario = helverica.render(f"Usuario: {usuario}",0, NEGRO)
+    ventana.blit(F_usuario, (500,0))
+
+
+def mostrar_mensaje():
+    global tusuario, raiz
+    raiz = tk.Tk()
+    raiz.geometry("700x300")
+    raiz.resizable(0, 0)
+    raiz.title("Battleship")
+    tusuario = tk.StringVar()
+    ComicFont = font.Font(family="Comic Sans", size=12, weight="bold")
+    tk.Label(raiz, text="¡Hola Usuario! ¿Cómo se encuentra? Bienvenido a BattleShip, primero", font=ComicFont).pack()
+    tk.Label(raiz, text="que nada espero que hayas leido las reglas, quiero que ingreses tu", font=ComicFont).pack()
+    tk.Label(raiz, text="nombre de usuario en el recuadro de abajo.", font=ComicFont).pack()
+    tk.Entry(raiz, width = 30, textvariable=tusuario).pack()
+    tk.Button(raiz, width=20, bd = 2, text="Aceptar nombre", command= comprobar_nombre ).pack()
+    tk.Label(raiz, text="El usuario debe tener más de 4 caracteres y menos de 12 caracteres.", font=ComicFont).pack()
+    raiz.mainloop()
+
+
 #BUCLE PRINCIPAL
 while True:
-    tiempo = 0
     for evento in pygame.event.get():
         if evento.type == pg.QUIT:
             sys.exit()
@@ -322,28 +390,34 @@ while True:
             if comenzar == 1:
                 atacar()
                 if turnos == 1:
-                    ataque_bot()
+                    esperar_turno()
+                    #ataque_bot()
         elif evento.type == pygame.KEYDOWN:
-            if evento.key == pg.K_DOWN:
-                menu+=1
-                if menu > 2:
-                    menu = 0
-            if evento.key == pg.K_UP:
-                menu-=1
-                if menu < 0:
-                    menu = 2
-            if evento.key == pg.K_SPACE:
-                print("entre")
-                if menu == 0:
-                    comenzar = 1
-                else:
-                    sys.exit()
-                    pg.quit()
-            print(menu)
+            if comenzar == 0:
+                if evento.key == pg.K_DOWN:
+                    menu+=1
+                    if menu > 2:
+                        menu = 0
+                    smenu.play()
+                if evento.key == pg.K_UP:
+                    menu-=1
+                    if menu < 0:
+                        menu = 2
+                    smenu.play()
+                if evento.key == pg.K_SPACE:
+                    if menu == 0:
+                        comenzar = 1
+                        transicion(1280, 700)
+                        mostrar_mensaje()
+                    else:
+                        sys.exit()
+                        pg.quit()
     ventana.fill(BLANCO)
+    ventana.blit(fondo, (0, 0))
 
     if comenzar == 1:
-        tiempo = int(pygame.time.get_ticks()/1000) #Calcula el tiempo
+        contador()  
+        #tiempo = int(pygame.time.get_ticks()/1000)
         #LLAMAMOS A LA CUADRICULA DEL ENEMIGO
         cuadricula_enemigo()
 
@@ -357,10 +431,11 @@ while True:
         #CUANDO ATAQUEMOS
         cuadricula_enemigo(960, 370, 1)
 
-        T_tiempo = arial.render(f"Tiempo: {tiempo}",0, NEGRO) 
-        ventana.blit(T_tiempo, (1200/2, 650/2))  
         coordenadas_letras()
         coordenadas_numeros()
+
+        mostrar_nombre()
+
     else:
         ventana.blit(main, (0, 0))
         
