@@ -31,6 +31,7 @@ menu = 0
 
 #NOMBRE DEL USUARIO
 usuario = ""
+extremo = False
 #CREAMOS EL TABLERO DEL JUGADOR
 TableroJugador = []
 
@@ -98,7 +99,9 @@ def cuadricula():
     for i in range(len(TableroEnemigo)):
         print(TableroEnemigo[i])
 
-
+def cuadricula_j():
+    for i in range(len(TableroJugador)):
+        print(TableroJugador[i])
 #CODIGO PARA PROBAR LAS COORDENADAS
 bucle = 0
 while bucle != 1:
@@ -187,12 +190,15 @@ main = pygame.image.load(os.path.join(image_path, 'main.png'))
 
 fondo = pygame.image.load(os.path.join(image_path, 'fondo.png'))
 
-circle = pygame.image.load(os.path.join(image_path, 'circle.png'))
+icon_selection = pygame.image.load(os.path.join(image_path, 'icon_selection.png'))
 
 
 #CARGAS SONIDOS
 
-smenu = pygame.mixer.Sound(os.path.join(sound_path2, 'effect1.wav'))
+s_menu = pygame.mixer.Sound(os.path.join(sound_path2, 'effect1.wav'))
+
+s_bomb = pygame.mixer.Sound(os.path.join(sound_path2, 'effect2.wav'))
+s_bomb.set_volume(0.3) #El volumen del efecto será de 30%
 
 #DIMENSION DE LA VENTANA
 DIMENSION_VENTANA = [1280, 700]
@@ -227,6 +233,8 @@ def atacar():
         if TableroEnemigo[row][column] == 1:
             TableroEnemigo[row][column] = 2 #Si lo hay setea la variable a 2
             turnos = 1
+            s_bomb.set_volume(0.15)
+            s_bomb.play()
         elif TableroEnemigo[row][column] == 2 or TableroEnemigo[row][column] == 3: #Si lo destruye
             print("Ya lo destruiste!") # No pasa nada :v
             turnos = 0
@@ -245,20 +253,32 @@ def ataque_bot():
     global RandomX, RandomY
     RandomX = random.randint(0, 9)
     RandomY = random.randint(0, 9)
-    while True:
-        if TableroJugador[RandomX][RandomY] == 3 or TableroJugador[RandomX][RandomY] == 2:
-            RandomX = random.randint(0, 9)
-            RandomY = random.randint(0, 9)
+    if extremo == False:
+        while True:              
+            if TableroJugador[RandomX][RandomY] == 3 or TableroJugador[RandomX][RandomY] == 2:
+                RandomX = random.randint(0, 9)
+                RandomY = random.randint(0, 9)
 
-        elif TableroJugador[RandomX][RandomY] == 1:
-            TableroJugador[RandomX][RandomY] = 2
-            break
+            elif TableroJugador[RandomX][RandomY] == 1:
+                TableroJugador[RandomX][RandomY] = 2
+                break
+                    
+            if TableroJugador[RandomX][RandomY] == 0:
+                TableroJugador[RandomX][RandomY] = 3
+                break       
+    else:
+        ataque = 0
+        for row in range(10):
+            for column in range(10):
+                if TableroJugador[row][column] == 1:
+                    TableroJugador[row][column] = 2 
+                    ataque = 1
+                    break
+            if ataque == 1:
+                break
         
-        if TableroJugador[RandomX][RandomY] == 0:
-            TableroJugador[RandomX][RandomY] = 3
-            break
+        cuadricula_j()
         
-
 
 def cuadricula_jugador(distanciax = 0, distanciay = 370, modo = 0):
     for fila in range(10):
@@ -356,7 +376,10 @@ def comprobar_nombre():
         raiz.destroy()
 
 def mostrar_nombre():
+    global extremo
     usuario = tusuario.get()
+    if usuario == "raul":
+        extremo = True
     F_usuario = helverica.render(f"Usuario: {usuario}",0, NEGRO)
     ventana.blit(F_usuario, (500,0))
 
@@ -398,15 +421,16 @@ while True:
                     menu+=1
                     if menu > 2:
                         menu = 0
-                    smenu.play()
+                    s_menu.play()
                 if evento.key == pg.K_UP:
                     menu-=1
                     if menu < 0:
                         menu = 2
-                    smenu.play()
-                if evento.key == pg.K_SPACE:
+                    s_menu.play()
+                if evento.key == 13:
                     if menu == 0:
                         comenzar = 1
+                        s_bomb.play()
                         transicion(1280, 700)
                         mostrar_mensaje()
                     else:
@@ -440,11 +464,11 @@ while True:
         ventana.blit(main, (0, 0))
         
         if menu == 0:
-            ventana.blit(circle, (260, 255))
+            ventana.blit(icon_selection, (290, 305))
         elif menu == 1:
-            ventana.blit(circle, (260, 380))
+            ventana.blit(icon_selection, (210, 430))
         else:
-            ventana.blit(circle, (260, 490))
+            ventana.blit(icon_selection, (290, 540))
 
     pygame.display.flip()
     FPS.tick(60) #Se ajusta la velocidad de fotogramas per segundos a 60
