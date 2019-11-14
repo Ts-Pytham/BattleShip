@@ -232,6 +232,11 @@ fondo_game_over = pygame.image.load(os.path.join(image_path, 'game_over.jpeg'))
 
 fondo_ganaste = pygame.image.load(os.path.join(image_path, 'ganaste.jpeg'))
 
+
+#IMAGEN PARA COMO JUGAR Y ADICIONAL CREO UNA VARIABLE PARA SABER SI ESTAMOS AHÌ
+fondo_como_jugar = pygame.image.load(os.path.join(image_path, 'como_jugar.jpeg'))
+
+como_jugar = 0 #Si la variable vale 1 es porque estamos en como jugar.
 # IMAGENES PARA SELECCIONAR 
 
 icon_selection = pygame.image.load(os.path.join(image_path, 'icon_selection.png'))
@@ -254,7 +259,10 @@ barco5_selection = pygame.image.load(os.path.join(image_path, 'barco5_selection.
 s_menu = pygame.mixer.Sound(os.path.join(sound_path2, 'effect1.wav'))
 
 s_bomb = pygame.mixer.Sound(os.path.join(sound_path2, 'effect2.wav'))
+
 s_bomb.set_volume(0.3) #El volumen del efecto será de 30%
+
+pygame.mixer.music.load(os.path.join(sound_path, 'fondo_musica.mp3'))
 
 s_presionar = pygame.mixer.Sound(os.path.join(sound_path2, 'effect3.wav'))
 
@@ -323,7 +331,6 @@ def ataque_bot():
             elif TableroJugador[RandomX][RandomY] == 1:
                 TableroJugador[RandomX][RandomY] = 2
                 ganar_bot+=1
-                break
                     
             if TableroJugador[RandomX][RandomY] == 0:
                 TableroJugador[RandomX][RandomY] = 3
@@ -528,10 +535,10 @@ def barcos_cuadricula():
 
     Frame = tk.Frame(raiz, bg = "white")
     Frame.pack()    
-    tk.Label(Frame, text="X: ", font=ComicFont, bg = "white").grid(row = 0, column = 0)
+    tk.Label(Frame, text="Y: ", font=ComicFont, bg = "white").grid(row = 0, column = 0)
     tk.Entry(Frame, textvariable = posx, width = 12, font=ComicFont, bg = "white" ).grid(row = 0, column = 1)
 
-    tk.Label(Frame, text="Y: ", font=ComicFont, bg = "white").grid(row = 1, column = 0, pady = 15)
+    tk.Label(Frame, text="X: ", font=ComicFont, bg = "white").grid(row = 1, column = 0, pady = 15)
     tk.Entry(Frame, textvariable = posy, width = 12, font=ComicFont, bg = "white" ).grid(row = 1, column = 1)
     
     tk.Radiobutton(Frame, text="Horizontal", value = 1, variable = eje, font=ComicFont, bg = "white" ).grid(row = 2, column = 0, pady = 15)
@@ -578,21 +585,27 @@ def colocar_barco():
             if (posx.get() > 9 or posy.get() > 7) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 9 and posy.get() <= 7) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(3, posx.get(), posy.get(), 1)
-                    raiz.destroy()
-                    poner_barcos[1] = 1
-                    elegir_barco = 3
-                    barco_elegido+=1
+                    if comprobar_barco(3, posx.get(), posy.get(), 1) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:
+                        crear_barcos(3, posx.get(), posy.get(), 1)
+                        raiz.destroy()
+                        poner_barcos[1] = 1
+                        elegir_barco = 3
+                        barco_elegido+=1
 
         if eje.get() == 2:
             if (posx.get() > 7 or posy.get() > 9) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 7 and posy.get() <= 9) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(3, posx.get(), posy.get(), 2)
-                    raiz.destroy()
-                    poner_barcos[1] = 1
-                    elegir_barco = 3
-                    barco_elegido+=1
+                    if comprobar_barco(3, posx.get(), posy.get(), 2) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:
+                        crear_barcos(3, posx.get(), posy.get(), 2)
+                        raiz.destroy()
+                        poner_barcos[1] = 1
+                        elegir_barco = 3
+                        barco_elegido+=1
 
     elif elegir_barco == 3:
         if eje.get() == 0:
@@ -601,21 +614,27 @@ def colocar_barco():
             if (posx.get() > 9 or posy.get() > 7) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 9 and posy.get() <= 7) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(3, posx.get(), posy.get(), 1)
-                    raiz.destroy()
-                    poner_barcos[2] = 1
-                    elegir_barco = 4
-                    barco_elegido+=1
+                    if comprobar_barco(3, posx.get(), posy.get(), 1) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:
+                        crear_barcos(3, posx.get(), posy.get(), 1)
+                        raiz.destroy()
+                        poner_barcos[2] = 1
+                        elegir_barco = 4
+                        barco_elegido+=1
 
         if eje.get() == 2:
             if (posx.get() > 7 or posy.get() > 9) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 7 and posy.get() <= 9) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(3, posx.get(), posy.get(), 2)
-                    raiz.destroy()
-                    poner_barcos[2] = 1
-                    elegir_barco = 4
-                    barco_elegido+=1
+                    if comprobar_barco(3, posx.get(), posy.get(), 2) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:
+                        crear_barcos(3, posx.get(), posy.get(), 2)
+                        raiz.destroy()
+                        poner_barcos[2] = 1
+                        elegir_barco = 4
+                        barco_elegido+=1
 
 
     elif elegir_barco == 4:
@@ -625,20 +644,26 @@ def colocar_barco():
             if (posx.get() > 9 or posy.get() > 6) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 9 and posy.get() <= 6) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(4, posx.get(), posy.get(), 1)
-                    raiz.destroy()
-                    poner_barcos[3] = 1
-                    elegir_barco = 5
-                    barco_elegido+=1
+                    if comprobar_barco(4, posx.get(), posy.get(), 1) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:    
+                        crear_barcos(4, posx.get(), posy.get(), 1)
+                        raiz.destroy()
+                        poner_barcos[3] = 1
+                        elegir_barco = 5
+                        barco_elegido+=1
         if eje.get() == 2:
             if (posx.get() > 6 or posy.get() > 9) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 6 and posy.get() <= 9) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(4, posx.get(), posy.get(), 2)
-                    raiz.destroy()
-                    poner_barcos[3] = 1
-                    elegir_barco = 5
-                    barco_elegido+=1
+                    if comprobar_barco(4, posx.get(), posy.get(), 2) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:
+                        crear_barcos(4, posx.get(), posy.get(), 2)
+                        raiz.destroy()
+                        poner_barcos[3] = 1
+                        elegir_barco = 5
+                        barco_elegido+=1
 
     elif elegir_barco == 5:
         if eje.get() == 0:
@@ -647,21 +672,33 @@ def colocar_barco():
             if (posx.get() > 9 or posy.get() > 5) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 9 and posy.get() <= 5) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(5, posx.get(), posy.get(), 1)
-                    raiz.destroy()
-                    poner_barcos[4] = 1
-                    elegir_barco = 1
-                    barco_elegido+=1
+                    if comprobar_barco(5, posx.get(), posy.get(), 1) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:
+                        crear_barcos(5, posx.get(), posy.get(), 1)
+                        raiz.destroy()
+                        poner_barcos[4] = 1
+                        elegir_barco = 1
+                        barco_elegido+=1
         if eje.get() == 2:
             if (posx.get() > 5 or posy.get() > 9) or (posx.get() < 0 or posy.get() < 0):
                 messagebox.showerror("¡ERROR!", "¡La posición elegida no puede ser usada porque se sale del rango!")
             elif (posx.get() <= 5 and posy.get() <= 9) and (posx.get() >= 0 and posy.get() >= 0):
-                    crear_barcos(5, posx.get(), posy.get(), 2)
-                    raiz.destroy()
-                    poner_barcos[4] = 1
-                    elegir_barco = 1
-                    barco_elegido+=1
+                    if comprobar_barco(5, posx.get(), posy.get(), 2) == 1:
+                        messagebox.showerror("¡ERROR!", "¡La posicion elegida contiene está ocupado por un barco!")
+                    else:    
+                        crear_barcos(5, posx.get(), posy.get(), 2)
+                        raiz.destroy()
+                        poner_barcos[4] = 1
+                        elegir_barco = 1
+                        barco_elegido+=1
+    cuadricula_j()
 
+def reproducir_fondo():
+    pygame.mixer.music.play(1)
+
+def ir_como_jugar():
+    ventana.blit(fondo_como_jugar, (0, 0))
 #----------------------------------FIN DE LAS FUNCIONES DE TKINTER-----------------
 #BUCLE PRINCIPAL
 while True:
@@ -678,27 +715,44 @@ while True:
                     ataque_bot()
         elif evento.type == pygame.KEYDOWN:
                 if evento.key == pg.K_DOWN:
-                    if cambiar_escena == 0:
+                    if cambiar_escena == 0 and como_jugar == 0:
                         menu+=1
                         if menu > 2:
                             menu = 0
                         s_menu.play()
                 if evento.key == pg.K_UP:
-                    if cambiar_escena == 0:
+                    if cambiar_escena == 0 and como_jugar == 0:
                         menu-=1
                         if menu < 0:
                             menu = 2
                         s_menu.play()
-                if evento.key == 13:
-                    if cambiar_escena == 0:
+                if evento.key == 13: #13 es el evento de enter, serìa tipo K_ENTER
+                    if cambiar_escena == 0 and como_jugar == 0:
                         if menu == 0:
                             cambiar_escena = 1
                             s_presionar.play()
                             transicion(1280, 700)
                             mostrar_mensaje()
+                        elif menu == 1:
+                            como_jugar = 1
+                            transicion(1280, 700)
                         else:
+                            transicion(1280, 700)
                             sys.exit()
                             pg.quit()
+                    elif ganar_jugador == 16:
+                        transicion(1280, 700)
+                        pg.quit()
+                        sys.exit()
+
+                    elif ganar_bot == 17:
+                        transicion(1280, 700)
+                        pg.quit()
+                        sys.exit()
+                            
+                    elif como_jugar == 1:
+                        transicion(1280, 700)
+                        como_jugar = 0
                 if evento.key == pg.K_LEFT:
                     if cambiar_escena == 1 and comenzar == 0 and barco_elegido <= 4:
                         elegir_barco-= 1
@@ -722,8 +776,8 @@ while True:
                         elif poner_barcos[4] == 0 and elegir_barco == 5: 
                             barcos_cuadricula()
     
-
     ventana.fill(BLANCO)
+
     ventana.blit(fondo, (0, 0))
 
     if cambiar_escena == 1:
@@ -752,18 +806,20 @@ while True:
 
         crear_sprites_barcos()
 
+
         if barco_elegido >= 5:#LO QUE HACE ES QUE NO SE USE EL PUNTERO
             poner_barcos[5] = 1
             comenzar = 1
 
-        if ganar_bot == 16:
+        if ganar_bot == 17:
             print("Te gane tonto")
             ventana.blit(fondo_game_over, (0, 0))
-        if ganar_jugador == 17:
+        if ganar_jugador == 16:
             ventana.blit(fondo_ganaste, (0, 0))
 
-
+        reproducir_fondo()
     else:
+        #MENU 
         ventana.blit(main, (0, 0))
         
         if menu == 0:
@@ -772,6 +828,8 @@ while True:
             ventana.blit(icon_selection, (210, 430))
         else:
             ventana.blit(icon_selection, (290, 540))
+    if como_jugar == 1:
+        ir_como_jugar()
 
     pygame.display.flip()
     FPS.tick(60) #Se ajusta la velocidad de fotogramas per segundos a 60
