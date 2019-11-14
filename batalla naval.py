@@ -817,7 +817,8 @@ while True:
         if ganar_jugador == 16:
             ventana.blit(fondo_ganaste, (0, 0))
 
-        reproducir_fondo()
+        if comenzar == 1:
+            reproducir_fondo()
     else:
         #MENU 
         ventana.blit(main, (0, 0))
