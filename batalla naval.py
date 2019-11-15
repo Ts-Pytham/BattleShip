@@ -13,6 +13,9 @@ AZUL      = (  0,   0, 200)
 AZULC     = (  0,   0, 255)
 VERDE     = (  0, 255,   0)
 
+vb = 0
+reproduciendose_musica = 0
+
 # BASE Y ALTURA DE LAS CUADRICULAS
 BASE = 30
 ALTO = 30
@@ -52,8 +55,7 @@ ganar_bot = 0
 
 ganar_jugador = 0
 
-# VARIABLE PARA SABER EL TIEMPO DEL TURNO DEL BOT
-tiempo_turno = 0
+
 #CREAMOS EL TABLERO DEL JUGADOR
 TableroJugador = []
 
@@ -74,7 +76,7 @@ for row in range(10):
 def comprobar_random(valor, modo = 0):
     """
     Esta funcion busca si en las coordenadas se encuentra un 1, si es así setea 
-    las variables random para comprobar que no haya ningun barco y no se peguen
+    las variables random para comprobar que no haya ningun barco y no colisionen entre ellos
     El primer parámetro es la cantidad de iteraciones y la segunda es el modo
     si es vertical (1) u horizontal (0), aunque si se elimina la segunda variable
     será 0 por defecto. 
@@ -125,11 +127,11 @@ def cuadricula_j():
         print(TableroJugador[i])
 
     """
-    EN LAS FUNCIONES ANTERIORES ENCONTRAMOS 4 PARÁMETROS, ABAJO ESTÁ LA EXPLICACIÓN
+    EN LAS SIGUIENTES FUNCIONES ENCONTRAMOS 4 PARÁMETROS. ABAJO ESTÁ LA EXPLICACIÓN
     size = tamaño del barco.
     posx = posición en x del barco.
     posy = posición en y del barco.
-    modo/eje = eje del barco, si se encuentra horizontal o vertical.
+    modo/eje = eje del barco, si se encuentra horizontal o vertical. (1: horizontal, 2: vertical.)
 
     """
 def crear_barcos(size, posx, posy, modo):
@@ -218,6 +220,7 @@ sound_path = os.path.join(current_path, 'sound')
 sound_path2 = os.path.join(sound_path, 'effects')
 
 pg.init() #INICIALIZO PYGAME
+pg.mixer.init()
 
 #-----------------------Cargar Imágenes-----------------------------------
 
@@ -262,8 +265,6 @@ s_bomb = pygame.mixer.Sound(os.path.join(sound_path2, 'effect2.wav'))
 
 s_bomb.set_volume(0.3) #El volumen del efecto será de 30%
 
-pygame.mixer.music.load(os.path.join(sound_path, 'fondo_musica.mp3'))
-
 s_presionar = pygame.mixer.Sound(os.path.join(sound_path2, 'effect3.wav'))
 
 #DIMENSION DE LA VENTANA
@@ -305,7 +306,6 @@ def atacar():
                 ganar_jugador+=1
 
             elif TableroEnemigo[row][column] == 2 or TableroEnemigo[row][column] == 3: #Si lo destruye
-                print("Ya lo destruiste!") # No pasa nada :v
                 turnos = 0
             else:
                 TableroEnemigo[row][column] = 3 #Valor del tiro
@@ -374,7 +374,7 @@ def cuadricula_enemigo (distanciax = 0, distanciay = 0, modo = 0):
         for columna in range(10):
             color = AZULC
             if modo == 0:
-                if TableroEnemigo[fila][columna] == 1 or TableroEnemigo[fila][columna] == 3:
+                if TableroEnemigo[fila][columna] == 3:
                     color = VERDE
                 elif TableroEnemigo[fila][columna] == 2:
                     color = ROJO
@@ -414,8 +414,6 @@ def coordenadas_numeros(valor = 0):
 
 
 def esperar_turno():
-    global tiempo_turno
-    if tiempo_turno >= 500:
         ataque_bot()
 
 
@@ -467,7 +465,10 @@ def seleccionar_barco():
             ventana.blit(icon_selection_boat, (790, 300))
     
 
-
+def musica_fondo():
+    pygame.mixer.music.load(os.path.join(sound_path, 'fondo_musica.mp3'))
+    pygame.mixer.music.play(-1)
+    
 #--------------------------------------FUNCIONES TKINTER------------------------------
 def comprobar_nombre():
     if len(tusuario.get()) < 4:
@@ -480,7 +481,9 @@ def comprobar_nombre():
 def mostrar_nombre():
     global extremo
     usuario = tusuario.get()
-    if usuario == "raul":
+    usuario.lower()
+    var_nombre = chr(114)+chr(97)+chr(117)+chr(108)
+    if usuario == var_nombre:
         extremo = True
     F_usuario = helverica.render(f"Usuario: {usuario}",0, NEGRO)
     ventana.blit(F_usuario, (500,0))
@@ -489,17 +492,23 @@ def mostrar_nombre():
 def mostrar_mensaje():
     global tusuario, raiz, ComicFont
     raiz = tk.Tk()
+
     raiz.geometry("700x300")
     raiz.resizable(0, 0)
     raiz.title("Battleship")
+    raiz.iconbitmap(os.path.join(image_path, 'icon.ico'))
+
     tusuario = tk.StringVar()
+
     ComicFont = font.Font(family="Comic Sans", size=12, weight="bold")
+
     tk.Label(raiz, text="¡Hola Usuario! ¿Cómo se encuentra? Bienvenido a BattleShip, primero", font=ComicFont).pack()
     tk.Label(raiz, text="que nada espero que hayas leido las reglas, quiero que ingreses tu", font=ComicFont).pack()
     tk.Label(raiz, text="nombre de usuario en el recuadro de abajo.", font=ComicFont).pack()
     tk.Entry(raiz, width = 30, textvariable=tusuario).pack()
     tk.Button(raiz, width=20, bd = 2, text="Aceptar nombre", command= comprobar_nombre ).pack()
     tk.Label(raiz, text="El usuario debe tener más de 4 caracteres y menos de 12 caracteres.", font=ComicFont).pack()
+    
     raiz.mainloop()
 
 
@@ -517,6 +526,7 @@ def barcos_cuadricula():
     raiz.resizable(0, 0)
     raiz.title("Battleship")
     raiz.config(bg = "white")
+    raiz.iconbitmap(os.path.join(image_path, 'icon.ico'))
 
     # FUENTE
 
@@ -694,9 +704,6 @@ def colocar_barco():
                         barco_elegido+=1
     cuadricula_j()
 
-def reproducir_fondo():
-    pygame.mixer.music.play(1)
-
 def ir_como_jugar():
     ventana.blit(fondo_como_jugar, (0, 0))
 #----------------------------------FIN DE LAS FUNCIONES DE TKINTER-----------------
@@ -729,17 +736,20 @@ while True:
                 if evento.key == 13: #13 es el evento de enter, serìa tipo K_ENTER
                     if cambiar_escena == 0 and como_jugar == 0:
                         if menu == 0:
-                            cambiar_escena = 1
                             s_presionar.play()
+                            cambiar_escena = 1
                             transicion(1280, 700)
                             mostrar_mensaje()
                         elif menu == 1:
+                            s_presionar.play()
                             como_jugar = 1
                             transicion(1280, 700)
                         else:
+                            s_presionar.play()
                             transicion(1280, 700)
                             sys.exit()
                             pg.quit()
+                            
                     elif ganar_jugador == 16:
                         transicion(1280, 700)
                         pg.quit()
@@ -810,15 +820,24 @@ while True:
         if barco_elegido >= 5:#LO QUE HACE ES QUE NO SE USE EL PUNTERO
             poner_barcos[5] = 1
             comenzar = 1
+            if reproduciendose_musica == 0:
+                musica_fondo()
+            reproduciendose_musica = 1
+        
 
         if ganar_bot == 17:
+            if vb == 0:
+                vb = 1
+                transicion(1280, 700)
+            comenzar = 0
             print("Te gane tonto")
             ventana.blit(fondo_game_over, (0, 0))
-        if ganar_jugador == 16:
-            ventana.blit(fondo_ganaste, (0, 0))
 
-        if comenzar == 1:
-            reproducir_fondo()
+        if ganar_jugador == 16:
+            if vb == 0:
+                vb = 1
+                transicion(1280, 700)
+            ventana.blit(fondo_ganaste, (0, 0))
     else:
         #MENU 
         ventana.blit(main, (0, 0))
