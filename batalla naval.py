@@ -55,6 +55,8 @@ ganar_bot = 0
 
 ganar_jugador = 0
 
+# TIEMPO DE RESPUESTA DEL BOT
+timer_bot = 0
 
 #CREAMOS EL TABLERO DEL JUGADOR
 TableroJugador = []
@@ -334,7 +336,7 @@ def atacar():
 
 
 def ataque_bot():
-    global RandomX, RandomY, ganar_bot
+    global RandomX, RandomY, ganar_bot, turnos
     RandomX = random.randint(0, 9)
     RandomY = random.randint(0, 9)
     if extremo == False:
@@ -346,9 +348,11 @@ def ataque_bot():
             elif TableroJugador[RandomX][RandomY] == 1:
                 TableroJugador[RandomX][RandomY] = 2
                 ganar_bot+=1
+                break
                     
             if TableroJugador[RandomX][RandomY] == 0:
                 TableroJugador[RandomX][RandomY] = 3
+                turnos = 0
                 break       
     else:
         ataque = 0
@@ -428,11 +432,6 @@ def coordenadas_numeros(valor = 0):
             ventana.blit(F_letras, (940, 374+increy))
             incre+=1 
             increy+=32
-
-
-def esperar_turno():
-        ataque_bot()
-
 
 
 def transicion(width, height): 
@@ -767,6 +766,8 @@ def colocar_barco():
         cuadricula_j()
     except tk.TclError:
         messagebox.showerror("Error","¡No puedes usar un caracter!")
+
+
 def ir_como_jugar():
     ventana.blit(fondo_como_jugar, (0, 0))
 #----------------------------------FIN DE LAS FUNCIONES DE TKINTER-----------------
@@ -779,10 +780,10 @@ while True:
             
         elif evento.type == pygame.MOUSEBUTTONDOWN:
             #LLama la función atacar.
-            if cambiar_escena == 1 and comenzar == 1:
+            if cambiar_escena == 1 and comenzar == 1 and turnos == 0:
                 atacar()
-                if turnos == 1:
-                    ataque_bot()
+                #if turnos == 1:
+                    #esperar_turno()
         elif evento.type == pygame.KEYDOWN:
                 if evento.key == pg.K_DOWN:
                     if cambiar_escena == 0 and como_jugar == 0:
@@ -879,6 +880,19 @@ while True:
 
         crear_sprites_barcos()
 
+        # CONDICIONES PARA REGULAR LA VELOCIDAD DEL ATAQUE DEL BOT
+        if turnos == 1:
+            if timer_bot%2 == 1:
+                t_bot = helverica.render(f"Esperando ataque del bot...",0, NEGRO)
+            else:
+                t_bot = helverica.render(f"Esperando ataque del bot..",0, NEGRO)
+            
+            ventana.blit(t_bot, ((DIMENSION_VENTANA[0]/2)-180, (DIMENSION_VENTANA[1]/2)-20))
+            timer_bot+=1
+            print(timer_bot)
+        if timer_bot > 30:
+            timer_bot = 0
+            ataque_bot()
 
         if barco_elegido >= 5:#LO QUE HACE ES QUE NO SE USE EL PUNTERO
             poner_barcos[5] = 1
