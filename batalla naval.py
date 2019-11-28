@@ -45,7 +45,7 @@ poner_barcos = [0, 0, 0, 0, 0, 0]
 
 #NOMBRE DEL USUARIO
 
-usuario = ""
+usuario = "username"
 
 #Clave secreta
 extremo = False
@@ -239,6 +239,8 @@ pg.mixer.init()
 
 vb = 0
 reproduciendose_musica = 0
+musica_menu = 0
+
 #-----------------------Cargar Imágenes-------------------------------------
 
 icon = pygame.image.load(os.path.join(image_path, 'icon.png'))
@@ -252,9 +254,12 @@ fondo_game_over = pygame.image.load(os.path.join(image_path, 'game_over.jpeg'))
 
 fondo_ganaste = pygame.image.load(os.path.join(image_path, 'ganaste.jpeg'))
 
+fondo_extreme_over = pygame.image.load(os.path.join(image_path, 'extreme-over.jpeg'))
+
 
 #IMAGEN PARA COMO JUGAR Y ADICIONAL CREO UNA VARIABLE PARA SABER SI ESTAMOS AHÌ
-fondo_como_jugar = pygame.image.load(os.path.join(image_path, 'como_jugar.jpeg'))
+fondo_como_jugar = pygame.image.load(os.path.join(image_path, 'como_jugar.png'))
+fondo_como_jugar2 = pygame.image.load(os.path.join(image_path, 'como_jugar2.png'))
 
 como_jugar = 0 #Si la variable vale 1 es porque estamos en como jugar.
 # IMAGENES PARA SELECCIONAR 
@@ -482,7 +487,10 @@ def seleccionar_barco():
     
 
 def musica_fondo():
-    pygame.mixer.music.load(os.path.join(sound_path, 'fondo_musica.mp3'))
+    if not extremo:
+        pygame.mixer.music.load(os.path.join(sound_path, 'fondo_musica.mp3'))
+    else:
+        pygame.mixer.music.load(os.path.join(sound_path, 'extreme.mp3'))
     pygame.mixer.music.play(-1)
     
 #--------------------------------------FUNCIONES TKINTER------------------------------
@@ -510,6 +518,8 @@ def comprobar_nombre():
 
 def mostrar_nombre():
     global extremo, usuario 
+    if len(tusuario.get()) <= 3:
+        tusuario.set("username")
     usuario = tusuario.get()
     var_nombre = chr(114)+chr(97)+chr(117)+chr(108)
     if js.strcmp(usuario, var_nombre) == 0:
@@ -769,7 +779,10 @@ def colocar_barco():
 
 
 def ir_como_jugar():
-    ventana.blit(fondo_como_jugar, (0, 0))
+    if como_jugar == 1:
+        ventana.blit(fondo_como_jugar, (0, 0))
+    else:
+        ventana.blit(fondo_como_jugar2, (0, 0))
 #----------------------------------FIN DE LAS FUNCIONES DE TKINTER-----------------
 #BUCLE PRINCIPAL
 while True:
@@ -782,8 +795,6 @@ while True:
             #LLama la función atacar.
             if cambiar_escena == 1 and comenzar == 1 and turnos == 0:
                 atacar()
-                #if turnos == 1:
-                    #esperar_turno()
         elif evento.type == pygame.KEYDOWN:
                 if evento.key == pg.K_DOWN:
                     if cambiar_escena == 0 and como_jugar == 0:
@@ -803,6 +814,7 @@ while True:
                             s_presionar.play()
                             cambiar_escena = 1
                             transicion(1280, 700)
+                            pygame.mixer.music.fadeout(3000)
                             mostrar_mensaje()
                         elif menu == 1:
                             s_presionar.play()
@@ -815,28 +827,41 @@ while True:
                             pg.quit()
                             
                     elif ganar_jugador == 17:
+                        pygame.mixer.music.fadeout(3000)
                         transicion(1280, 700)
                         pg.quit()
                         sys.exit()
 
                     elif ganar_bot == 17:
+                        pygame.mixer.music.fadeout(3000)
                         transicion(1280, 700)
                         pg.quit()
                         sys.exit()
+                    
                             
-                    elif como_jugar == 1:
-                        transicion(1280, 700)
-                        como_jugar = 0
                 if evento.key == pg.K_LEFT:
                     if cambiar_escena == 1 and comenzar == 0 and barco_elegido <= 4:
                         elegir_barco-= 1
                         if elegir_barco < 1:
                             elegir_barco = 5
+
+                    elif como_jugar <= 2 and como_jugar > 0:
+                        transicion(1280, 700)
+                        como_jugar -= 1
+
                 if evento.key == pg.K_RIGHT:
                     if cambiar_escena == 1 and comenzar == 0 and barco_elegido <= 4:
                         elegir_barco+= 1
                         if elegir_barco > 5:
                             elegir_barco = 1
+
+                    elif como_jugar >= 1:
+                        transicion(1280, 700)
+                        como_jugar+=1
+                    
+                    if como_jugar > 2:
+                        como_jugar = 0
+
                 if evento.key == pg.K_SPACE:
                     if cambiar_escena == 1 and comenzar == 0:
                         if poner_barcos[0] == 0 and elegir_barco == 1 and barco_elegido <= 4:
@@ -906,11 +931,19 @@ while True:
             if vb == 0:
                 vb = 1
                 transicion(1280, 700)
-                pygame.mixer.music.load(os.path.join(sound_path, 'perdedor.mp3'))
+                if not extremo:
+                    pygame.mixer.music.load(os.path.join(sound_path, 'perdedor.mp3'))
+                else:
+                    pygame.mixer.music.load(os.path.join(sound_path, 'extreme_over.mp3'))
+
                 pygame.mixer.music.play(-1)
+
             comenzar = 0
             print("Te gane tonto")
-            ventana.blit(fondo_game_over, (0, 0))
+            if not extremo:
+                ventana.blit(fondo_game_over, (0, 0))
+            else:
+                ventana.blit(fondo_extreme_over, (0,0))
 
         if ganar_jugador == 17:
             if vb == 0:
@@ -919,8 +952,13 @@ while True:
                 pygame.mixer.music.load(os.path.join(sound_path, 'ganador.mp3'))
                 pygame.mixer.music.play(-1)
             ventana.blit(fondo_ganaste, (0, 0))
+            comenzar = 0
     else:
-        #MENU 
+        #MENU
+        if musica_menu == 0:
+            pygame.mixer.music.load(os.path.join(sound_path, 'theme.mp3'))
+            pygame.mixer.music.play(-1)
+            musica_menu = 1
         ventana.blit(main, (0, 0))
         
         if menu == 0:
@@ -929,7 +967,8 @@ while True:
             ventana.blit(icon_selection, (210, 430))
         else:
             ventana.blit(icon_selection, (290, 540))
-    if como_jugar == 1:
+
+    if como_jugar >= 1 and como_jugar <= 2:
         ir_como_jugar()
 
     pygame.display.flip()
