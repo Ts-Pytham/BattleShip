@@ -1,9 +1,12 @@
-import pygame, sys, random, os
-import tkinter as tk
-import jstring as js
-from tkinter import font
-import pygame as pg
-from tkinter import messagebox
+try:
+    import sys, pygame as pg, random, os
+    import tkinter as tk
+    from JS_String import jstring as js
+    from tkinter import font
+    from tkinter import messagebox
+except ImportError:
+    print("Los módulos no fueron cargados correctamente, pruebe si tiene instalado pygame y/o tener el módulo JS_String en la carpeta del juego.")
+    sys.exit()
 
 #COLORES
 BLANCO    = (255, 255, 255)
@@ -243,65 +246,65 @@ musica_menu = 0
 
 #-----------------------Cargar Imágenes-------------------------------------
 
-icon = pygame.image.load(os.path.join(image_path, 'icon.png'))
+icon = pg.image.load(os.path.join(image_path, 'icon.png'))
 
-main = pygame.image.load(os.path.join(image_path, 'main.png'))
+main = pg.image.load(os.path.join(image_path, 'main.png'))
 
-fondo = pygame.image.load(os.path.join(image_path, 'fondo.png'))
+fondo = pg.image.load(os.path.join(image_path, 'fondo.png'))
 
 # IMAGENES QUE SE MUESTRAS SI GANASTE O PERDISTE
-fondo_game_over = pygame.image.load(os.path.join(image_path, 'game_over.jpeg'))
+fondo_game_over = pg.image.load(os.path.join(image_path, 'game_over.jpeg'))
 
-fondo_ganaste = pygame.image.load(os.path.join(image_path, 'ganaste.jpeg'))
+fondo_ganaste = pg.image.load(os.path.join(image_path, 'ganaste.jpeg'))
 
-fondo_extreme_over = pygame.image.load(os.path.join(image_path, 'extreme-over.jpeg'))
+fondo_extreme_over = pg.image.load(os.path.join(image_path, 'extreme-over.jpeg'))
 
 
 #IMAGEN PARA COMO JUGAR Y ADICIONAL CREO UNA VARIABLE PARA SABER SI ESTAMOS AHÌ
-fondo_como_jugar = pygame.image.load(os.path.join(image_path, 'como_jugar.png'))
-fondo_como_jugar2 = pygame.image.load(os.path.join(image_path, 'como_jugar2.png'))
+fondo_como_jugar = pg.image.load(os.path.join(image_path, 'como_jugar.png'))
+fondo_como_jugar2 = pg.image.load(os.path.join(image_path, 'como_jugar2.png'))
 
 como_jugar = 0 #Si la variable vale 1 es porque estamos en como jugar.
 # IMAGENES PARA SELECCIONAR 
 
-icon_selection = pygame.image.load(os.path.join(image_path, 'icon_selection.png'))
+icon_selection = pg.image.load(os.path.join(image_path, 'icon_selection.png'))
 
-icon_selection_boat = pygame.image.load(os.path.join(image_path, 'icon_selection_boat.png'))
+icon_selection_boat = pg.image.load(os.path.join(image_path, 'icon_selection_boat.png'))
 
 
 # SPRITES DE LOS BARCOS (para la cuadricula)
-barco1_h = pygame.image.load(os.path.join(image_path, 'barco1_h.png'))
+barco1_h = pg.image.load(os.path.join(image_path, 'barco1_h.png'))
 
 #SPIRTES DE LOS BARCOS (para elegirlos)
-barco1_selection = pygame.image.load(os.path.join(image_path, 'barco1_selection.png'))
-barco2_selection = pygame.image.load(os.path.join(image_path, 'barco2_selection.png'))
-barco3_selection = pygame.image.load(os.path.join(image_path, 'barco3_selection.png'))
-barco4_selection = pygame.image.load(os.path.join(image_path, 'barco4_selection.png'))
-barco5_selection = pygame.image.load(os.path.join(image_path, 'barco5_selection.png'))
+barco1_selection = pg.image.load(os.path.join(image_path, 'barco1_selection.png'))
+barco2_selection = pg.image.load(os.path.join(image_path, 'barco2_selection.png'))
+barco3_selection = pg.image.load(os.path.join(image_path, 'barco3_selection.png'))
+barco4_selection = pg.image.load(os.path.join(image_path, 'barco4_selection.png'))
+barco5_selection = pg.image.load(os.path.join(image_path, 'barco5_selection.png'))
 
 #CARGAS SONIDOS
 
-s_menu = pygame.mixer.Sound(os.path.join(sound_path2, 'effect1.wav'))
+s_menu = pg.mixer.Sound(os.path.join(sound_path2, 'effect1.wav'))
 
-s_bomb = pygame.mixer.Sound(os.path.join(sound_path2, 'effect2.wav'))
+s_bomb = pg.mixer.Sound(os.path.join(sound_path2, 'effect2.wav'))
 
 s_bomb.set_volume(0.3) #El volumen del efecto será de 30%
 
-s_presionar = pygame.mixer.Sound(os.path.join(sound_path2, 'effect3.wav'))
+s_presionar = pg.mixer.Sound(os.path.join(sound_path2, 'effect3.wav'))
 
 #DIMENSION DE LA VENTANA
 DIMENSION_VENTANA = [1280, 700]
-ventana = pygame.display.set_mode(DIMENSION_VENTANA)#LE DAMOS DIMENSIONES A LA VENTANA
+ventana = pg.display.set_mode(DIMENSION_VENTANA)#LE DAMOS DIMENSIONES A LA VENTANA
 
-pygame.display.set_caption("BattleShip")
+pg.display.set_caption("BattleShip")
 
-pygame.display.set_icon(icon)
+pg.display.set_icon(icon)
 
-FPS = pygame.time.Clock() #Se obtiene la velocidad de cuadros
+FPS = pg.time.Clock() #Se obtiene la velocidad de cuadros
 
 #-----------------------------------FUENTES-----------------------------------------------------------------------
-arial = pygame.font.SysFont("arial", 30)
-helverica = pygame.font.SysFont("helverica", 40)
+arial = pg.font.SysFont("arial", 30)
+helverica = pg.font.SysFont("helverica", 40)
 #-----------------------------------Funciones con pygame----------------------------------------------------------
 def atacar():
     global turnos, pos, ganar_jugador, comenzar
@@ -314,7 +317,7 @@ def atacar():
     if comenzar == 1:
         try:
             # El usuario presiona el ratón. Obtiene su posición.
-            pos = pygame.mouse.get_pos()
+            pos = pg.mouse.get_pos()
             # Cambia las coordenadas x/y de la pantalla por coordenadas reticulares
             var_1 = (BASE + MARGEN)
             column = pos[0]// var_1
@@ -385,7 +388,7 @@ def cuadricula_jugador(distanciax = 0, distanciay = 370, modo = 0):
                     color = VERDE
                 elif TableroJugador[fila][columna] == 2:
                     color = ROJO
-            pygame.draw.rect(ventana,
+            pg.draw.rect(ventana,
                                 color,
                                 [(MARGEN+BASE) * columna + MARGEN+distanciax,
                                 (MARGEN+ALTO) * fila + MARGEN+distanciay,
@@ -407,7 +410,7 @@ def cuadricula_enemigo (distanciax = 0, distanciay = 0, modo = 0):
             else:
                 if TableroEnemigo[fila][columna] == 2:
                     color = ROJO
-            pygame.draw.rect(ventana,
+            pg.draw.rect(ventana,
                                 color,
                                 [(MARGEN+BASE) * columna + MARGEN+distanciax,
                                 (MARGEN+ALTO) * fila + MARGEN+distanciay,
@@ -440,13 +443,13 @@ def coordenadas_numeros(valor = 0):
 
 
 def transicion(width, height): 
-    fade = pygame.Surface((width, height))
+    fade = pg.Surface((width, height))
     fade.fill((0,0,0))
     for alpha in range(0, 150):
         fade.set_alpha(alpha)
         ventana.blit(fade, (0,0))
-        pygame.display.update()
-        pygame.time.delay(1)
+        pg.display.update()
+        pg.time.delay(1)
 
 def crear_sprites_barcos():
     # POSICIONAMOS EL ICONO PARA SELECCIONAR EL BARCO EN X = 500, Y = 500
@@ -488,10 +491,10 @@ def seleccionar_barco():
 
 def musica_fondo():
     if not extremo:
-        pygame.mixer.music.load(os.path.join(sound_path, 'fondo_musica.mp3'))
+        pg.mixer.music.load(os.path.join(sound_path, 'fondo_musica.mp3'))
     else:
-        pygame.mixer.music.load(os.path.join(sound_path, 'extreme.mp3'))
-    pygame.mixer.music.play(-1)
+        pg.mixer.music.load(os.path.join(sound_path, 'extreme.mp3'))
+    pg.mixer.music.play(-1)
     
 #--------------------------------------FUNCIONES TKINTER------------------------------
 def centrar(win): 
@@ -786,16 +789,16 @@ def ir_como_jugar():
 #----------------------------------FIN DE LAS FUNCIONES DE TKINTER-----------------
 #BUCLE PRINCIPAL
 while True:
-    for evento in pygame.event.get():
+    for evento in pg.event.get():
         if evento.type == pg.QUIT:
             sys.exit()
             pg.quit()
             
-        elif evento.type == pygame.MOUSEBUTTONDOWN:
+        elif evento.type == pg.MOUSEBUTTONDOWN:
             #LLama la función atacar.
             if cambiar_escena == 1 and comenzar == 1 and turnos == 0:
                 atacar()
-        elif evento.type == pygame.KEYDOWN:
+        elif evento.type == pg.KEYDOWN:
                 if evento.key == pg.K_DOWN:
                     if cambiar_escena == 0 and como_jugar == 0:
                         menu+=1
@@ -814,7 +817,7 @@ while True:
                             s_presionar.play()
                             cambiar_escena = 1
                             transicion(1280, 700)
-                            pygame.mixer.music.fadeout(3000)
+                            pg.mixer.music.fadeout(3000)
                             mostrar_mensaje()
                         elif menu == 1:
                             s_presionar.play()
@@ -827,13 +830,13 @@ while True:
                             pg.quit()
                             
                     elif ganar_jugador == 17:
-                        pygame.mixer.music.fadeout(3000)
+                        pg.mixer.music.fadeout(3000)
                         transicion(1280, 700)
                         pg.quit()
                         sys.exit()
 
                     elif ganar_bot == 17:
-                        pygame.mixer.music.fadeout(3000)
+                        pg.mixer.music.fadeout(3000)
                         transicion(1280, 700)
                         pg.quit()
                         sys.exit()
@@ -880,7 +883,6 @@ while True:
     ventana.blit(fondo, (0, 0))
 
     if cambiar_escena == 1:
-        #tiempo = int(pygame.time.get_ticks()/1000)
         #LLAMAMOS A LA CUADRICULA DEL ENEMIGO
         cuadricula_enemigo()
 
@@ -932,11 +934,11 @@ while True:
                 vb = 1
                 transicion(1280, 700)
                 if not extremo:
-                    pygame.mixer.music.load(os.path.join(sound_path, 'perdedor.mp3'))
+                    pg.mixer.music.load(os.path.join(sound_path, 'perdedor.mp3'))
                 else:
-                    pygame.mixer.music.load(os.path.join(sound_path, 'extreme_over.mp3'))
+                    pg.mixer.music.load(os.path.join(sound_path, 'extreme_over.mp3'))
 
-                pygame.mixer.music.play(-1)
+                pg.mixer.music.play(-1)
 
             comenzar = 0
             print("Te gane tonto")
@@ -949,15 +951,15 @@ while True:
             if vb == 0:
                 vb = 1
                 transicion(1280, 700)
-                pygame.mixer.music.load(os.path.join(sound_path, 'ganador.mp3'))
-                pygame.mixer.music.play(-1)
+                pg.mixer.music.load(os.path.join(sound_path, 'ganador.mp3'))
+                pg.mixer.music.play(-1)
             ventana.blit(fondo_ganaste, (0, 0))
             comenzar = 0
     else:
         #MENU
         if musica_menu == 0:
-            pygame.mixer.music.load(os.path.join(sound_path, 'theme.mp3'))
-            pygame.mixer.music.play(-1)
+            pg.mixer.music.load(os.path.join(sound_path, 'theme.mp3'))
+            pg.mixer.music.play(-1)
             musica_menu = 1
         ventana.blit(main, (0, 0))
         
@@ -971,5 +973,5 @@ while True:
     if como_jugar >= 1 and como_jugar <= 2:
         ir_como_jugar()
 
-    pygame.display.flip()
+    pg.display.flip()
     FPS.tick(60) #Se ajusta la velocidad de fotogramas per segundos a 60
