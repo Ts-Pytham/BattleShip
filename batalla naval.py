@@ -1,11 +1,23 @@
 try:
-    import sys, pygame as pg, random, os
+    modulo = 0
+    import os, sys, pygame as pg, random
     import tkinter as tk
+    modulo = 1
     from JS_String import jstring as js
     from tkinter import font
     from tkinter import messagebox
-except ImportError:
+except ImportError:    
     print("Los módulos no fueron cargados correctamente, pruebe si tiene instalado pygame y/o tener el módulo JS_String en la carpeta del juego.")
+    print("Chequeo de módulos instalados (X = No instalado; + = Instalado): ")
+    if modulo == 1:
+        print("JS_String: X.\nPygame: +.")
+    else:
+        if not os.path.isdir(os.path.join(os.path.dirname(__file__), 'JS_String')):
+            print("JS_String: X.\nPygame: X")
+        else:
+            print("JS_String: +.\nPygame: X")
+    print("Sys: +.\nTkinter: +.\nRandom: +.\nOs: +.")
+
     sys.exit()
 
 #COLORES
@@ -418,8 +430,6 @@ def cuadricula_enemigo (distanciax = 0, distanciay = 0, modo = 0):
                                 ALTO])
 
 
-
-
 def coordenadas_numeros(valor = 0):
     incre = 0
     increx = 0
@@ -450,6 +460,7 @@ def transicion(width, height):
         ventana.blit(fade, (0,0))
         pg.display.update()
         pg.time.delay(1)
+
 
 def crear_sprites_barcos():
     # POSICIONAMOS EL ICONO PARA SELECCIONAR EL BARCO EN X = 500, Y = 500
@@ -496,6 +507,7 @@ def musica_fondo():
         pg.mixer.music.load(os.path.join(sound_path, 'extreme.mp3'))
     pg.mixer.music.play(-1)
     
+
 #--------------------------------------FUNCIONES TKINTER------------------------------
 def centrar(win): 
     win.update_idletasks() 
@@ -518,6 +530,7 @@ def comprobar_nombre():
         messagebox.showwarning("¡ERROR!","¡El usuario no puede contener más de 12 caracteres!")
     else:
         raiz.destroy()
+
 
 def mostrar_nombre():
     global extremo, usuario 
@@ -612,6 +625,7 @@ def barcos_cuadricula():
     tk.Button(raiz, bg = "white", bd = 2, relief = "solid", text="Cambiar color", font=ComicFont, command = cambiar_color).pack()
     raiz.mainloop()  
 
+
 def cambiar_color():
     global tcolor 
     it = 0
@@ -628,7 +642,6 @@ def cambiar_color():
         
     else:
         messagebox.showwarning("Advertencia", "¡La longitud del color es incorrecto!")
-
 
 
 def colocar_barco():
@@ -786,6 +799,8 @@ def ir_como_jugar():
         ventana.blit(fondo_como_jugar, (0, 0))
     else:
         ventana.blit(fondo_como_jugar2, (0, 0))
+
+        
 #----------------------------------FIN DE LAS FUNCIONES DE TKINTER-----------------
 #BUCLE PRINCIPAL
 while True:
